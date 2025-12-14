@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Controle de Abastecimento',
-        short_name: 'Abastecimento',
+        short_name: 'FuelLog',
         description: 'Controle pessoal de abastecimentos, km e limite quinzenal Ipiranga',
         theme_color: '#111827',
         background_color: '#111827',
