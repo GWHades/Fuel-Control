@@ -11,15 +11,24 @@ from .routes.auth import router as auth_router
 from .routes.abastecimentos import router as abastecimentos_router
 from .routes.dashboard import router as dashboard_router
 
+
 app = FastAPI(title="Fuel Control API", version="0.2.0")
+
+# CORS configurado para Vercel + local
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://fuel-control.vercel.app",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 def on_startup():
@@ -28,15 +37,20 @@ def on_startup():
     try:
         user = db.query(User).filter(User.username == settings.ADMIN_USER).first()
         if not user:
-            user = User(username=settings.ADMIN_USER, password_hash=hash_password(settings.ADMIN_PASS))
+            user = User(
+                username=settings.ADMIN_USER,
+                password_hash=hash_password(settings.ADMIN_PASS),
+            )
             db.add(user)
             db.commit()
     finally:
         db.close()
 
+
 app.include_router(auth_router)
 app.include_router(abastecimentos_router)
 app.include_router(dashboard_router)
+
 
 @app.get("/health")
 def health():
