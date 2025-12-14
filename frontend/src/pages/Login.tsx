@@ -35,7 +35,7 @@ export default function Login() {
     <div className="container">
       <div className="card" style={{ maxWidth: 520, margin: '24px auto' }}>
         <h2>Entrar</h2>
-        <p className="muted">Use o usuário admin criado pelo backend (ADMIN_USER / ADMIN_PASS).</p>
+      
 
         <form onSubmit={submit} className="grid">
           <div>
