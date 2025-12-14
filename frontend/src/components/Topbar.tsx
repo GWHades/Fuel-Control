@@ -1,24 +1,32 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { clearToken, getToken } from '../services/authStore'
+import { Link, useLocation } from 'react-router-dom'
+import { clearToken } from '../services/authStore'
+import { setAuthToken } from '../services/api'
 
 export function Topbar() {
-  const nav = useNavigate()
-  const token = getToken()
-  function logout() { clearToken(); nav('/login') }
+  const loc = useLocation()
+
+  function sair() {
+    clearToken()
+    setAuthToken(null)
+    window.location.href = '/login'
+  }
+
+  const active = (path: string) => (loc.pathname === path ? { fontWeight: 700 } : undefined)
 
   return (
     <div className="topbar">
-      <div className="container">
-        <div className="nav">
-          <strong>Controle de Abastecimento</strong>
-          {token && (
-            <>
-              <Link className="btn small secondary" to="/">Dashboard</Link>
-              <Link className="btn small secondary" to="/novo">Novo</Link>
-              <Link className="btn small secondary" to="/lancamentos">Lançamentos</Link>
-              <button className="btn small" onClick={logout}>Sair</button>
-            </>
-          )}
+      <div className="container" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 0' }}>
+        <div style={{ fontWeight: 800 }}>Fuel Control</div>
+
+        <nav style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <Link to="/" style={active('/')}>Dashboard</Link>
+          <Link to="/rapido" style={active('/rapido')}>Rápido</Link>
+          <Link to="/novo" style={active('/novo')}>Novo</Link>
+          <Link to="/lancamentos" style={active('/lancamentos')}>Lançamentos</Link>
+        </nav>
+
+        <div style={{ marginLeft: 'auto' }}>
+          <button className="btn small secondary" onClick={sair}>Sair</button>
         </div>
       </div>
     </div>
