@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api'
 
 type Posto = 'IPIRANGA' | 'OUTRO'
+type Abastecimento = { km_odometro: number }
 
 export default function Rapido() {
   const nav = useNavigate()
@@ -11,9 +12,34 @@ export default function Rapido() {
   const [litros, setLitros] = useState('')
   const [km, setKm] = useState('')
   const [obs, setObs] = useState('')
+
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
+
+  // ✅ auto-KM: puxa o último km registrado e preenche ao abrir a tela
+  useEffect(() => {
+    let mounted = true
+
+    async function fetchLastKm() {
+      try {
+        // pega 1 item mais recente
+        const res = await api.get('/abastecimentos', { params: { limit: 1, order: 'desc' } })
+        const rows = res.data as Abastecimento[]
+        if (!mounted) return
+
+        if (rows && rows.length > 0 && rows[0].km_odometro) {
+          // só preenche se o campo estiver vazio (não atrapalha se você já digitou)
+          setKm((prev) => (prev?.trim() ? prev : String(rows[0].km_odometro)))
+        }
+      } catch {
+        // silencioso: não bloqueia a tela se falhar
+      }
+    }
+
+    fetchLastKm()
+    return () => { mounted = false }
+  }, [])
 
   async function salvar(continuar: boolean) {
     setErr(null)
@@ -38,7 +64,6 @@ export default function Rapido() {
         observacao: obs?.trim() || null,
       })
 
-      // feedback de app (vibração curta no celular, se disponível)
       if (navigator.vibrate) navigator.vibrate(40)
 
       setMsg('Salvo com sucesso.')
@@ -46,7 +71,7 @@ export default function Rapido() {
         setValor('')
         setLitros('')
         setObs('')
-        // mantém km para facilitar (você pode escolher apagar se preferir)
+        // mantém km preenchido para agilizar próximos lançamentos
       } else {
         nav('/')
       }
@@ -64,7 +89,7 @@ export default function Rapido() {
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div>
             <h2>Lançamento Rápido</h2>
-            <p className="muted">Ideal para usar no posto pelo celular.</p>
+            <p className="muted">Ideal para usar no posto pelo celular. O KM é preenchido automaticamente com o último registro.</p>
           </div>
           <button className="btn secondary small" onClick={() => nav('/')}>Voltar</button>
         </div>
@@ -109,6 +134,9 @@ export default function Rapido() {
               inputMode="numeric"
               placeholder="Ex.: 125430"
             />
+            <div className="muted" style={{ marginTop: 4 }}>
+              Dica: se precisar, ajuste o KM manualmente antes de salvar.
+            </div>
           </div>
 
           <div>
