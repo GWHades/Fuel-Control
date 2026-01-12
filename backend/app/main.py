@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # Registro das rotas (O dashboard deve estar aqui para evitar o 404)
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(auth.router, prefix="/auth")
 app.include_router(abastecimentos.router, prefix="/abastecimentos", tags=["abastecimentos"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 
