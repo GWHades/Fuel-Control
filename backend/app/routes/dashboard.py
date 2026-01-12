@@ -15,13 +15,13 @@ def get_summary(db: Session = Depends(get_db), current_user = Depends(get_curren
     
     # Soma total do mês via SQL (Muito rápido)
     total_mes = db.query(func.sum(Abastecimento.valor)).filter(
-        Abastecimento.usuario_id == current_user.id,
+        Abastecimento.user_id == current_user.id,
         Abastecimento.data_hora >= inicio_mes
     ).scalar() or 0.0
 
     # Soma de litros do mês via SQL
     litros_mes = db.query(func.sum(Abastecimento.litros)).filter(
-        Abastecimento.usuario_id == current_user.id,
+        Abastecimento.user_id == current_user.id,
         Abastecimento.data_hora >= inicio_mes
     ).scalar() or 0.0
 
@@ -30,13 +30,13 @@ def get_summary(db: Session = Depends(get_db), current_user = Depends(get_curren
     inicio_quinzena = hoje.replace(day=dia_corte, hour=0, minute=0, second=0)
     
     total_quinzena = db.query(func.sum(Abastecimento.valor)).filter(
-        Abastecimento.usuario_id == current_user.id,
+        Abastecimento.user_id == current_user.id,
         Abastecimento.data_hora >= inicio_quinzena
     ).scalar() or 0.0
 
     # Retorna apenas os últimos 10 registros para o Dashboard (Evita lentidão no carregamento)
     ultimos_registros = db.query(Abastecimento).filter(
-        Abastecimento.usuario_id == current_user.id
+        Abastecimento.user_id == current_user.id
     ).order_by(Abastecimento.data_hora.desc()).limit(10).all()
 
     return {
