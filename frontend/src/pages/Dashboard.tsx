@@ -8,7 +8,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadDashboard() {
       try {
-        setLoading(True);
+        setLoading(true); // CORRIGIDO: True -> true
         const response = await api.get('/dashboard/summary');
         setData(response.data);
       } catch (error) {
@@ -34,18 +34,23 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-xs font-bold text-gray-400 uppercase">Gasto Mensal</p>
-          <p className="text-2xl font-black text-green-600">R$ {data?.total_mes.toFixed(2)}</p>
+          <p className="text-2xl font-black text-green-600">
+            R$ {data?.total_mes ? data.total_mes.toFixed(2) : "0.00"}
+          </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-xs font-bold text-gray-400 uppercase">Quinzena Atual</p>
-          <p className="text-2xl font-black text-blue-600">R$ {data?.total_quinzena.toFixed(2)}</p>
+          <p className="text-2xl font-black text-blue-600">
+            R$ {data?.total_quinzena ? data.total_quinzena.toFixed(2) : "0.00"}
+          </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-xs font-bold text-gray-400 uppercase">Litros (Mês)</p>
-          <p className="text-2xl font-black text-orange-600">{data?.litros_mes.toFixed(2)}L</p>
+          <p className="text-2xl font-black text-orange-600">
+            {data?.litros_mes ? data.litros_mes.toFixed(2) : "0.00"}L
+          </p>
         </div>
       </div>
-      {/* Tabela de recentes aqui... */}
     </div>
   );
 }
