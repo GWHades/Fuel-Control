@@ -1,57 +1,28 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from .routes import auth, abastecimentos, dashboard  # Certifique-se de importar o dashboard
+from .db import engine
+from . import models
 
-from .db import engine, SessionLocal
-from .models import Base, User
-from .settings import settings
-from .auth import hash_password
+# Cria as tabelas no banco de dados se não existirem
+models.Base.metadata.create_all(bind=engine)
 
-from .routes.auth import router as auth_router
-from .routes.abastecimentos import router as abastecimentos_router
-from .routes.dashboard import router as dashboard_router
+app = FastAPI(title="Fuel Control API")
 
-
-app = FastAPI(title="Fuel Control API", version="0.2.0")
-
-# CORS configurado para Vercel + local
-ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://fuel-control.vercel.app",
-]
-
+# Configuração de CORS para permitir que o frontend acesse o backend no Render
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Em produção, você pode substituir pelo link do seu frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Registro das rotas
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(abastecimentos.router, prefix="/abastecimentos", tags=["abastecimentos"])
+app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"]) # ESTA LINHA É A CURA DO 404
 
-@app.on_event("startup")
-def on_startup():
-    Base.metadata.create_all(bind=engine)
-    db: Session = SessionLocal()
-    try:
-        user = db.query(User).filter(User.username == settings.ADMIN_USER).first()
-        if not user:
-            user = User(
-                username=settings.ADMIN_USER,
-                password_hash=hash_password(settings.ADMIN_PASS),
-            )
-            db.add(user)
-            db.commit()
-    finally:
-        db.close()
-
-
-app.include_router(auth_router)
-app.include_router(abastecimentos_router)
-app.include_router(dashboard_router)
-
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+@app.get("/")
+def health_check():
+    return {"status": "online", "message": "Fuel Control API is running"}
