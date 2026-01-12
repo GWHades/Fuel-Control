@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 
 export function Dashboard() {
-  const [summary, setSummary] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadDashboard() {
       try {
-        setLoading(true);
+        setLoading(True);
         const response = await api.get('/dashboard/summary');
-        setSummary(response.data);
+        setData(response.data);
       } catch (error) {
         console.error("Erro ao carregar dashboard", error);
       } finally {
@@ -22,53 +22,30 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600">Carregando dados otimizados...</span>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-500">Iniciando sistema...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Resumo de Abastecimentos</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500 uppercase font-semibold">Total no Mês</p>
-          <p className="text-3xl font-bold text-green-600">R$ {summary?.total_mes.toFixed(2)}</p>
+    <div className="p-4 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <p className="text-xs font-bold text-gray-400 uppercase">Gasto Mensal</p>
+          <p className="text-2xl font-black text-green-600">R$ {data?.total_mes.toFixed(2)}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500 uppercase font-semibold">Total na Quinzena</p>
-          <p className="text-3xl font-bold text-blue-600">R$ {summary?.total_quinzena.toFixed(2)}</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <p className="text-xs font-bold text-gray-400 uppercase">Quinzena Atual</p>
+          <p className="text-2xl font-black text-blue-600">R$ {data?.total_quinzena.toFixed(2)}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-500 uppercase font-semibold">Litros (Mês)</p>
-          <p className="text-3xl font-bold text-orange-600">{summary?.litros_mes.toFixed(2)}L</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <p className="text-xs font-bold text-gray-400 uppercase">Litros (Mês)</p>
+          <p className="text-2xl font-black text-orange-600">{data?.litros_mes.toFixed(2)}L</p>
         </div>
       </div>
-
-      {/* Tabela de registros recentes - Já vem limitada do backend */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-4 font-semibold">Data</th>
-              <th className="p-4 font-semibold">Veículo</th>
-              <th className="p-4 font-semibold text-right">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {summary?.recent_entries.map((entry: any) => (
-              <tr key={entry.id} className="border-t border-gray-100">
-                <td className="p-4">{new Date(entry.data_hora).toLocaleDateString()}</td>
-                <td className="p-4">{entry.veiculo}</td>
-                <td className="p-4 text-right">R$ {entry.valor.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Tabela de recentes aqui... */}
     </div>
   );
 }
