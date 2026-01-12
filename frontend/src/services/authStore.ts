@@ -1,13 +1,11 @@
-const KEY = 'fuel_control_token'
-
 export function getToken(): string | null {
-  return localStorage.getItem(KEY)
+  return localStorage.getItem('token');
 }
 
 export function setToken(token: string) {
-  localStorage.setItem(KEY, token)
+  localStorage.setItem('token', token);
 }
 
 export function clearToken() {
-  localStorage.removeItem(KEY)
+  localStorage.removeItem('token');
 }
