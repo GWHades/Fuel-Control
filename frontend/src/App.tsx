@@ -1,16 +1,11 @@
-import axios from 'axios';
+import { Routes, Route } from 'react-router-dom';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<div>Home</div>} />
+    </Routes>
+  );
+}
 
-// Adiciona o token automaticamente em todas as requisições
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export { api };
+export default App;
