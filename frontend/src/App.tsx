@@ -1,24 +1,18 @@
-import { Routes, Route } from 'react-router-dom'
-import { Topbar } from './components/Topbar'
-import { RequireAuth } from './components/RequireAuth'
+import axios from 'axios'
 
-import Dashboard from './pages/Dashboard'
-import Login from './pages/Login'
-import Novo from './pages/Novo'
-import Lancamentos from './pages/Lancamentos'
-import Rapido from './pages/Rapido'
+const API_URL = import.meta.env.VITE_API_URL as string
 
-export default function App() {
-  return (
-    <>
-      <Topbar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
-        <Route path="/rapido" element={<RequireAuth><Rapido /></RequireAuth>} />
-        <Route path="/novo" element={<RequireAuth><Novo /></RequireAuth>} />
-        <Route path="/lancamentos" element={<RequireAuth><Lancamentos /></RequireAuth>} />
-      </Routes>
-    </>
-  )
-}
+export const api = axios.create({
+  baseURL: API_URL,
+})
+
+// CORREÇÃO DE APARECIMENTO DE DADOS: Injetar token em todas as chamadas
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
