@@ -5,7 +5,7 @@ from ..schemas import LoginRequest, Token
 from .. import models
 from ..auth import verify_password, create_access_token
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 @router.post("/login", response_model=Token)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
