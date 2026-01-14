@@ -25,3 +25,8 @@ app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 @app.get("/")
 def read_root():
     return {"status": "ok"}
+from .create_admin import create_admin
+
+@app.on_event("startup")
+def startup_event():
+    create_admin()
