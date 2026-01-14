@@ -9,7 +9,7 @@ from ..auth import verify_password, create_access_token
 
 router = APIRouter()
 
-@router.post("/login")
+@router.post("/login", summary="Login do usuário")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
@@ -19,7 +19,7 @@ def login(
     if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Email ou senha inválidos"
+            detail="Credenciais inválidas"
         )
 
     access_token = create_access_token(
@@ -29,10 +29,5 @@ def login(
 
     return {
         "access_token": access_token,
-        "token_type": "bearer",
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "nome": user.nome
-        }
+        "token_type": "bearer"
     }
