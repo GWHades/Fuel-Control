@@ -30,3 +30,5 @@ from .create_admin import create_admin
 @app.on_event("startup")
 def startup_event():
     create_admin()
+from .routes import admin
+app.include_router(admin.router)
