@@ -1,15 +1,20 @@
-import { api } from './api'
+import axios from 'axios';
 
-export type LoginResponse = {
-  access_token: string
-  token_type: string
-}
+export async function login(email: string, password: string) {
+  const form = new URLSearchParams();
+  form.append('username', email);
+  form.append('password', password);
+  form.append('grant_type', 'password');
 
-export async function login(username: string, password: string): Promise<LoginResponse> {
-  const res = await api.post<LoginResponse>(
-    '/auth/login',
-    { username, password },
-    { headers: { 'Content-Type': 'application/json' } }
-  )
-  return res.data
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_URL}/auth/login`,
+    form.toString(),
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  return response.data;
 }
