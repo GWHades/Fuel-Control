@@ -8,15 +8,13 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
   return token ? children : <Navigate to="/login" replace />;
 }
 
-function App() {
+export default function App() {
   const token = getToken();
 
   return (
     <Routes>
-      {/* Rota pública */}
       <Route path="/login" element={<Login />} />
 
-      {/* Rotas protegidas */}
       <Route
         path="/dashboard"
         element={
@@ -26,7 +24,6 @@ function App() {
         }
       />
 
-      {/* Redirecionamentos */}
       <Route
         path="/"
         element={<Navigate to={token ? '/dashboard' : '/login'} replace />}
@@ -36,5 +33,3 @@ function App() {
     </Routes>
   );
 }
-
-export default App;
